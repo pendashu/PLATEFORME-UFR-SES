@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gestion des Stocks - UFR SES</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <!-- Chargement des scripts -->
+  <script src="js/auth.js"></script>
+</head>
+<body>
+
+  <!-- ✅ Vérification d'authentification -->
+  <script>
+    const user = checkAuth();
+  </script>
+
+  <header>
+    <h1>📦 Gestion des Stocks</h1>
+    <a href="index.html" class="back">← Retour au menu</a>
+    <a href="login.html" id="logoutBtn" style="font-size: 14px; color: #900;">🔐 Déconnexion</a>
+  </header>
+
+  <main>
+    <!-- Section réservée au comptable -->
+    <section class="card" id="section-saisie">
+      <h2>Ajouter une entrée ou sortie</h2>
+      <form id="formStock">
+        <label>Type :</label>
+        <select id="typeMouvement">
+          <option value="entree">Entrée</option>
+          <option value="sortie">Sortie</option>
+        </select>
+
+        <label>Article :</label>
+        <input type="text" id="article" required />
+
+        <label>Quantité :</label>
+        <input type="number" id="quantite" required />
+
+        <label>Date :</label>
+        <input type="date" id="dateMouvement" required />
+
+        <button type="submit">Enregistrer</button>
+      </form>
+    </section>
+
+    <!-- Tableau des stocks -->
+    <section class="card">
+      <h2>État des stocks</h2>
+      <table id="tableauStocks">
+        <thead>
+          <tr>
+            <th>Article</th>
+            <th>Stock actuel</th>
+            <th>Seuil</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="4">Aucun article ajouté.</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- ✅ PROTECTION DES RÔLES -->
+  <script>
+    // 🔒 Seul le comptable peut saisir
+    const rolesAutorises = ["comptable"];
+
+    if (!rolesAutorises.includes(user.role)) {
+      // Masquer le formulaire
+      document.getElementById("section-saisie").style.display = "none";
+
+      // Désactiver tous les champs
+      document.querySelectorAll("input, select, button").forEach(el => {
+        el.disabled = true;
+      });
+
+      // Bloquer toute soumission
+      document.querySelectorAll("form").forEach(form => {
+        form.addEventListener("submit", function(e) {
+          e.preventDefault();
+          alert(`❌ Interdit : seul le comptable peut effectuer des saisies.`);
+        });
+      });
+
+      // Message d'information
+      const notice = document.createElement("div");
+      notice.textContent = `👁️ Mode lecture seule – Connecté(e) en tant que ${user.role}`;
+      notice.style = "background: #e8f5e8; color: #2e7d32; padding: 12px; text-align: center; font-weight: bold; margin: 15px 20px; border-radius: 5px;";
+      document.querySelector("main").prepend(notice);
+    }
+  </script>
+
+  <!-- ✅ Gestion du déconnexion -->
+  <script>
+    document.getElementById("logoutBtn").addEventListener("click", function(e) {
+      if (confirm("Voulez-vous vraiment vous déconnecter ?")) {
+        localStorage.removeItem("user");
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+
+</body>
+</html>

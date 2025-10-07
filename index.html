@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Plateforme UFR SES</title>
+  <link rel="stylesheet" href="css/style.css"/>
+
+  <!-- 🔽 Librairies externes (toujours en haut) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <!-- 🔽 Fonctions personnalisées -->
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+</head>
+
+<body>
+  <!-- ✅ 1. VÉRIFICATION D'AUTHENTIFICATION (en haut, avant tout affichage) -->
+  <script>
+    if (typeof checkAuth !== 'function') {
+      // Si auth.js n'est pas chargé → on le charge
+      const script = document.createElement('script');
+      script.src = 'js/auth.js';
+      script.onload = () => {
+        const user = checkAuth();
+        document.body.setAttribute('data-user', user.role);
+      };
+      document.head.appendChild(script);
+    } else {
+      const user = checkAuth();
+      document.body.setAttribute('data-user', user.role);
+    }
+  </script>
+
+  <!-- ✅ 2. EN-TÊTE DE LA PAGE -->
+  <header>
+    <h1>📊 Plateforme de Gestion - UFR SES</h1>
+    <p>Bienvenue, 
+      <strong id="welcomeName">Chargement...</strong>
+    </p>
+    <a href="login.html" id="logoutBtn" style="font-size: 14px; color: #900; cursor: pointer;">🔐 Se déconnecter</a>
+  </header>
+
+  <main>
+    <div class="menu">
+      <a href="budget.html">💼 Gérer le budget</a>
+      <a href="per.html">📝 Expression de besoin (PER)</a>
+      <a href="stock.html">📦 Gérer les stocks</a>
+      <a href="carburant.html">⛽ Gérer le carburant</a>
+      <a href="passation.html">📋 Plan de passation</a>
+      <a href="dashboard.html">📈 Tableau de bord</a>
+    </div>
+
+    <!-- 📦 OUTILS D'EXPORT -->
+    <section class="card">
+      <h2>📤 Sauvegarde & Export</h2>
+
+      <!-- 💾 Sauvegarder toutes les données (JSON) -->
+      <button onclick="exporterDonnees()" style="margin: 10px 0; width: 100%; padding: 10px;">
+        💾 Sauvegarder les données (.json)
+      </button>
+
+      <!-- 📄 Exporter en PDF -->
+      <button onclick="exporterEnPDF()" style="margin: 10px 0; width: 100%; padding: 10px;">
+        📄 Générer un rapport PDF
+      </button>
+
+      <!-- 📊 Exporter en Excel -->
+      <button onclick="exporterEnExcel()" style="margin: 10px 0; width: 100%; padding: 10px;">
+        📊 Exporter en Excel (.xlsx)
+      </button>
+
+      <!-- 📁 Restaurer une sauvegarde -->
+      <div style="margin-top: 15px;">
+        <label for="importFile">📁 Restaurer une sauvegarde (.json) :</label>
+        <input 
+          type="file" 
+          id="importFile" 
+          accept=".json" 
+          onchange="importerDonnees(this.files[0])"
+          style="padding: 5px;" 
+        />
+      </div>
+    </section>
+  </main>
+
+  <!-- ✅ 3. SCRIPTS COMPLÉMENTAIRES (à la fin, avant </body>) -->
+  <script>
+    // Afficher le nom de l'utilisateur
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      document.getElementById("welcomeName").textContent = user.name;
+    }
+
+    // Confirmation de déconnexion
+    document.getElementById("logoutBtn").addEventListener("click", function(e) {
+      if (confirm("Voulez-vous vraiment vous déconnecter ?")) {
+        localStorage.removeItem("user");
+      }
+    });
+  </script>
+</body>
+</html>
