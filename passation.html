@@ -5,24 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>📋 Plan de Passation - UFR SES</title>
   <link rel="stylesheet" href="css/style.css" />
+  <!-- Charger auth.js -->
+  <script src="js/auth.js"></script>
 </head>
 <body>
-  <!-- Avant tout contenu -->
-<script>
-  // Vérifie si l'utilisateur est connecté
-  if (typeof checkAuth !== 'function') {
-    // Charge la fonction si elle n'existe pas encore
-    document.write('<script src="js/auth.js"><\/script>');
-  }
-  const currentUser = checkAuth();
-</script>
+
+  <!-- ✅ Vérification d'authentification -->
+  <script>
+    const user = checkAuth(); // Récupère l'utilisateur
+
+    // 🔐 Accès réservé au comptable finance et au directeur
+    if (user.role !== "comptable_finance" && user.role !== "directeur") {
+      alert("❌ Accès refusé : page réservée au comptable finance et au directeur.");
+      window.location.href = "index.html";
+    }
+  </script>
+
   <header>
     <h1>📋 Suivi du Plan de Passation des Marchés</h1>
     <a href="index.html" class="back">← Retour au menu</a>
   </header>
 
   <main>
-    <!-- Formulaire d'ajout -->
+    <!-- 🔽 MODE LECTURE SEULE POUR LE DIRECTEUR -->
+    <script>
+      if (user.role === "directeur") {
+        document.querySelectorAll("input[type='text'], input[type='number'], textarea").forEach(input => {
+          input.disabled = true;
+          input.style.backgroundColor = "#f0f0f0";
+        });
+        document.querySelectorAll("button").forEach(btn => btn.style.display = "none");
+        
+        const notice = document.createElement("div");
+        notice.textContent = "👁️ Mode lecture seule – Directeur de l'UFR";
+        notice.style = "background: #e3f2fd; color: #0d47a1; padding: 10px; text-align: center; font-weight: bold;";
+        document.querySelector("main")?.prepend(notice);
+      }
+    </script>
+
+    <!-- 🔽 FORMULAIRE D'AJOUT (visible seulement pour comptable_finance) -->
     <section class="card">
       <h2>Ajouter une opération de passation</h2>
       <form id="formPassation">
@@ -42,7 +63,7 @@
       </form>
     </section>
 
-    <!-- Étapes du processus -->
+    <!-- 🔽 SUIVI DES ÉTAPES -->
     <section class="card">
       <h2>Suivi des étapes</h2>
       <p><em>Cliquez sur une ligne pour mettre à jour son statut.</em></p>
@@ -60,13 +81,12 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Les lignes s'ajoutent ici -->
           <tr><td colspan="8">Aucune opération enregistrée.</td></tr>
         </tbody>
       </table>
     </section>
 
-    <!-- Détail de mise à jour -->
+    <!-- 🔽 MISE À JOUR D'ÉTAPE -->
     <section class="card" id="sectionDetail" style="display: none;">
       <h2>Mettre à jour une étape</h2>
       <p><strong>Opération :</strong> <span id="detailObjet"></span></p>
@@ -91,37 +111,7 @@
     </section>
   </main>
 
-  <!-- Lien vers le script -->
+  <!-- ✅ Charger le script métier -->
   <script src="js/passation.js"></script>
-  <script>
-  if (user.role === "csa") {
-    // 1️⃣ Masquer les formulaires et boutons
-    document.querySelectorAll("form").forEach(f => f.style.display = "none");
-    document.querySelectorAll("button[type='submit']").forEach(b => b.style.display = "none");
-
-    // 2️⃣ Désactiver tous les champs de saisie (pour sécurité)
-    document.querySelectorAll("input, select, textarea").forEach(input => {
-      input.disabled = true;
-      input.style.backgroundColor = "#f5f5f5";
-    });
-
-    // 3️⃣ Bloquer TOUTE soumission de formulaire
-    document.querySelectorAll("form").forEach(form => {
-      form.addEventListener("submit", function(e) {
-        e.preventDefault(); // ⛔ Empêche la soumission
-        alert("❌ Action non autorisée : mode lecture seule.");
-      });
-    });
-
-    // 4️⃣ Message clair
-    const notice = document.createElement("div");
-    notice.style = "background: #fff3cd; color: #856404; padding: 15px; text-align: center; font-weight: bold; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ffeaa7;";
-    notice.textContent = "Mode lecture seule – Conseil Scientifique Académique";
-    const header = document.querySelector("header");
-    if (header) {
-      header.after(notice);
-    }
-  }
-</script>
 </body>
 </html>

@@ -1,67 +1,50 @@
-// Chargement au démarrage
 document.addEventListener("DOMContentLoaded", function () {
-  // Charger les PER sauvegardés
   const perListe = JSON.parse(localStorage.getItem("perListe")) || [];
-  afficherPER(perListe);
-});
+  const listePER = document.getElementById("listePER");
 
-// Gérer la soumission du formulaire
-document.getElementById("formPER").addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  // Récupérer les données
-  const demandeur = document.getElementById("demandeur").value;
-  const service = document.getElementById("service").value;
-  const objet = document.getElementById("objet").value;
-  const montant = parseFloat(document.getElementById("montant").value);
-  const date = new Date().toLocaleDateString("fr-MA");
-
-  // Vérifier le seuil
-  const SEUIL = 500000;
-  const alerteDiv = document.getElementById("alerte");
-
-  if (montant > SEUIL) {
-    alerteDiv.innerHTML = `<p style="color: orange;">⚠️ Alerte : Ce besoin dépasse ${SEUIL.toLocaleString()} FCFA. Validation du directeur requise.</p>`;
+  // Afficher la liste des PER
+  listePER.innerHTML = "";
+  if (perListe.length === 0) {
+    listePER.innerHTML = "<li>Aucun PER enregistré.</li>";
   } else {
-    alerteDiv.innerHTML = `<p style="color: green;">✅ Demande enregistrée. Montant inférieur au seuil.</p>`;
-  }
-
-  // Sauvegarder la demande
-  let perListe = JSON.parse(localStorage.getItem("perListe")) || [];
-  perListe.push({ demandeur, service, objet, montant, date, statut: "En attente" });
-  localStorage.setItem("perListe", JSON.stringify(perListe));
-
-  // Mettre à jour l'affichage
-  afficherPER(perListe);
-
-  // Réinitialiser le formulaire
-  this.reset();
-  setTimeout(() => {
-    alerteDiv.innerHTML = "";
-  }, 3000);
-});
-
-// Fonction pour afficher la liste des PER
-function afficherPER(liste) {
-  const ul = document.getElementById("listePER");
-  if (liste.length === 0) {
-    ul.innerHTML = "<li>Aucune demande enregistrée.</li>";
-  } else {
-    ul.innerHTML = "";
-    liste.forEach((p, i) => {
+    perListe.forEach(p => {
       const li = document.createElement("li");
-      li.style.padding = "8px";
-      li.style.margin = "5px 0";
-      li.style.borderBottom = "1px solid #eee";
-      li.innerHTML = `
-        <strong>${p.date}</strong><br>
-        ${p.demandeur} (${p.service})<br>
-        <em>${p.objet}</em><br>
-        <span style="color: ${p.montant > 500000 ? 'orange' : 'green'};">
-          ${p.montant.toLocaleString()} FCFA
-        </span>
-      `;
-      ul.appendChild(li);
+      li.textContent = `${p.date} | ${p.demandeur} (${p.service}) : ${p.objet} → ${p.montant} FCFA`;
+      listePER.appendChild(li);
     });
   }
+
+  // Gestion du formulaire (si présent)
+  const form = document.getElementById("formPER");
+  if (form) {
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      
+      const newPer = {
+        date: document.getElementById("date").value || new Date().toISOString().split('T')[0],
+        demandeur: document.getElementById("demandeur").value,
+        service: document.getElementById("service").value,
+        objet: document.getElementById("objet").value,
+        montant: parseFloat(document.getElementById("montant").value)
+      };
+
+      perListe.push(newPer);
+      localStorage.setItem("perListe", JSON.stringify(perListe));
+      
+      // Réinitialiser le formulaire
+      form.reset();
+      
+      // Rafraîchir l'affichage
+      const li = document.createElement("li");
+      li.textContent = `${newPer.date} | ${newPer.demandeur} (${newPer.service}) : ${newPer.objet} → ${newPer.montant} FCFA`;
+      listePER.appendChild(li);
+    });
+  }
+});
+const role = user.role;
+
+
+if (user.role !== "comptable_finance") {
+  alert("❌ Accès refusé : uniquement pour le comptable finance.");
+  window.location.href = "index.html";
 }

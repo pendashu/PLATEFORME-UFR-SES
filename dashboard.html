@@ -94,6 +94,22 @@
       document.querySelectorAll("input, select, textarea").forEach(inp => inp.disabled = true);
     }
   </script>
+<script>
+   user = checkAuth();
 
+  // Mode lecture seule pour CSA
+  if (user.role === "csa") {
+    document.querySelectorAll("form, button[type='submit']").forEach(el => el.style.display = "none");
+    const notice = document.createElement("div");
+    notice.textContent = "👁️ Mode lecture seule – Conseil Scientifique Académique";
+    notice.style = "background: #fff3cd; color: #856404; padding: 10px; text-align: center;";
+    document.querySelector("main").prepend(notice);
+  }
+
+  // Le directeur voit les alertes
+  if (user.role === "directeur") {
+    document.getElementById("section-per-urgent").style.display = "block";
+  }
+</script>
 </body>
 </html>

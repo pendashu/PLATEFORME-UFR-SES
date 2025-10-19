@@ -11,8 +11,14 @@
 
   <!-- ✅ Vérification d'authentification -->
   <script>
-    const user = checkAuth();
-  </script>
+  const user = checkAuth();
+
+  // 🔒 Seul le comptable matière peut accéder à cette page
+  if (user.role !== "comptable_matiere") {
+    alert("❌ Accès refusé : cette page est réservée au comptable matière.");
+    window.location.href = "index.html";
+  }
+</script>
 
   <header>
     <h1>📦 Gestion des Stocks</h1>
@@ -65,8 +71,8 @@
 
   <!-- ✅ PROTECTION DES RÔLES -->
   <script>
-    // 🔒 Seul le comptable peut saisir
-    const rolesAutorises = ["comptable"];
+  // ✅ Rôles autorisés à saisir
+  const rolesAutorises = ["comptable_matiere", "comptable_finance"];
 
     if (!rolesAutorises.includes(user.role)) {
       // Masquer le formulaire

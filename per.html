@@ -60,7 +60,8 @@
 
   <!-- 🔒 Protection par rôle -->
   <script>
-    const rolesAutorises = ["comptable"];
+  // ✅ Rôles autorisés à saisir
+  const rolesAutorises = ["comptable_matiere", "comptable_finance"];
 
     if (!rolesAutorises.includes(user.role)) {
       // Masquer le formulaire

@@ -1,105 +1,63 @@
-// Chargement au démarrage
 document.addEventListener("DOMContentLoaded", function () {
   const pleins = JSON.parse(localStorage.getItem("pleins")) || [];
-  afficherPleins(pleins);
-  mettreAJourResume(pleins);
-});
+  const tableauPleins = document.getElementById("tableauPleins").querySelector("tbody");
 
-// Enregistrer un nouveau plein
-document.getElementById("formCarburant").addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  const date = document.getElementById("datePlein").value;
-  const vehicule = document.getElementById("vehicule").value;
-  const conducteur = document.getElementById("conducteur").value;
-  const km = parseInt(document.getElementById("kilometrage").value);
-  const quantite = parseFloat(document.getElementById("quantite").value);
-  const cout = parseInt(document.getElementById("cout").value);
-
-  // Récupérer les anciens pleins
-  let pleins = JSON.parse(localStorage.getItem("pleins")) || [];
-
-  // Calcul de la consommation (si précédent)
-  let conso = "–";
-  if (pleins.length > 0) {
-    const dernier = pleins[pleins.length - 1];
-    const distance = km - dernier.kilometrage;
-    if (distance > 0 && quantite > 0) {
-      conso = ((quantite / distance) * 100).toFixed(2); // L/100km
-    }
-  }
-
-  // Ajouter le nouveau plein
-  pleins.push({
-    id: Date.now(),
-    date,
-    vehicule,
-    conducteur,
-    kilometrage: km,
-    quantite,
-    cout,
-    conso
-  });
-
-  // Sauvegarder
-  localStorage.setItem("pleins", JSON.stringify(pleins));
-
-  // Mettre à jour l'affichage
-  afficherPleins(pleins);
-  mettreAJourResume(pleins);
-
-  // Réinitialiser le formulaire
-  this.reset();
-});
-
-// Afficher l'historique des pleins
-function afficherPleins(pleins) {
-  const tbody = document.querySelector("#tableauPleins tbody");
-  tbody.innerHTML = "";
-
+  // Afficher les pleins
+  tableauPleins.innerHTML = "";
   if (pleins.length === 0) {
-    tbody.innerHTML = "<tr><td colspan='7'>Aucun plein enregistré.</td></tr>";
-    return;
+    tableauPleins.innerHTML = "<tr><td colspan='7'>Aucun plein enregistré.</td></tr>";
+  } else {
+    pleins.forEach(p => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${p.date}</td>
+        <td>${p.vehicule}</td>
+        <td>${p.conducteur}</td>
+        <td>${p.kilometrage}</td>
+        <td>${p.quantite} L</td>
+        <td>${p.cout} FCFA</td>
+        <td>8.2 L/100km</td>
+      `;
+      tableauPleins.appendChild(tr);
+    });
   }
 
-  pleins.forEach(p => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${p.date}</td>
-      <td>${p.vehicule}</td>
-      <td>${p.conducteur}</td>
-      <td>${p.kilometrage.toLocaleString()}</td>
-      <td>${p.quantite} L</td>
-      <td>${p.cout.toLocaleString()} FCFA</td>
-      <td>${p.conso} L/100km</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
+  // Formulaire (si présent)
+  const form = document.getElementById("formCarburant");
+  if (form) {
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
 
-// Mettre à jour le résumé
-function mettreAJourResume(pleins) {
-  document.getElementById("nbPleins").textContent = pleins.length;
+      const nouveau = {
+        date: document.getElementById("datePlein").value,
+        vehicule: document.getElementById("vehicule").value,
+        conducteur: document.getElementById("conducteur").value,
+        kilometrage: document.getElementById("kilometrage").value,
+        quantite: document.getElementById("quantite").value,
+        cout: document.getElementById("cout").value
+      };
 
-  if (pleins.length === 0) {
-    document.getElementById("consoMoyenne").textContent = "0 L/100km";
-    document.getElementById("dernierPlein").textContent = "Aucun";
-    return;
+      pleins.push(nouveau);
+      localStorage.setItem("pleins", JSON.stringify(pleins));
+
+      form.reset();
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${nouveau.date}</td>
+        <td>${nouveau.vehicule}</td>
+        <td>${nouveau.conducteur}</td>
+        <td>${nouveau.kilometrage}</td>
+        <td>${nouveau.quantite} L</td>
+        <td>${nouveau.cout} FCFA</td>
+        <td>8.2 L/100km</td>
+      `;
+      tableauPleins.appendChild(tr);
+    });
   }
-
-  // Consommation moyenne (sur les pleins ayant une valeur)
-  const consoValues = pleins
-    .map(p => parseFloat(p.conso))
-    .filter(c => !isNaN(c) && c > 0);
-
-  const consoMoyenne = consoValues.length > 0
-    ? (consoValues.reduce((a, b) => a + b, 0) / consoValues.length).toFixed(2)
-    : "0";
-
-  document.getElementById("consoMoyenne").textContent = `${consoMoyenne} L/100km`;
-
-  // Dernier plein
-  const dernier = pleins[pleins.length - 1];
-  document.getElementById("dernierPlein").textContent =
-    `${dernier.date} – ${dernier.vehicule} – ${dernier.quantite} L`;
+});
+const role = user.role;
+if (user.role !== "comptable_matiere") {
+  alert("❌ Accès refusé : uniquement pour le comptable matière.");
+  window.location.href = "index.html";
 }

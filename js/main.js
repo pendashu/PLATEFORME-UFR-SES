@@ -1,64 +1,70 @@
-// ========================
-// FONCTION EXPORT PDF
-// ========================
+// === FONCTIONS D'EXPORT ===
+
+function exporterDonnees() {
+  const data = {
+    meta: { date: new Date().toISOString(), version: "1.0" },
+    depenses: JSON.parse(localStorage.getItem("depenses")) || [],
+    perListe: JSON.parse(localStorage.getItem("perListe")) || [],
+    materiels: JSON.parse(localStorage.getItem("materiels")) || [],
+    entrees: JSON.parse(localStorage.getItem("entrees")) || [],
+    sorties: JSON.parse(localStorage.getItem("sorties")) || [],
+    pleins: JSON.parse(localStorage.getItem("pleins")) || [],
+    passation: JSON.parse(localStorage.getItem("passation")) || []
+  };
+
+  const dataStr = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+  const a = document.createElement('a');
+  a.href = 'data:' + dataStr;
+  a.download = "SAUVEGARDE_UFR_SES_" + new Date().toISOString().split('T')[0] + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function importerDonnees(fichier) {
+  const lecteur = new FileReader();
+  lecteur.onload = function(e) {
+    const data = JSON.parse(e.target.result);
+    for (const [key, value] of Object.entries(data)) {
+      if (key !== "meta") {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+    }
+    alert("✅ Données restaurées !");
+    location.reload();
+  };
+  lecteur.readAsText(fichier);
+}
+
 function exporterEnPDF() {
-  // Vérifie que jsPDF est chargé
-  if (typeof window.jspdf === 'undefined') {
-    alert("❌ Erreur : jsPDF n'est pas chargé.");
-    return;
-  }
+  if (typeof window.jspdf === 'undefined') return;
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
   doc.setFontSize(16);
-  doc.text("Expression de Besoins (PER)", 10, 10);
+  doc.text("Rapport PER - UFR SES", 10, 10);
 
-  doc.setFontSize(12);
   const perListe = JSON.parse(localStorage.getItem("perListe")) || [];
   let y = 30;
+  perListe.forEach(p => {
+    doc.text(`${p.objet} – ${p.montant} FCFA (${p.demandeur})`, 10, y);
+    y += 10;
+    if (y > 270) {
+      doc.addPage();
+      y = 20;
+    }
+  });
 
-  if (perListe.length === 0) {
-    doc.text("Aucun PER enregistré.", 10, y);
-  } else {
-    perListe.forEach((p, i) => {
-      const line = `${i + 1}. ${p.objet} – ${p.montant.toLocaleString()} FCFA (${p.demandeur})`;
-      doc.text(line, 10, y);
-      y += 10;
-      if (y > 270) {
-        doc.addPage();
-        y = 20;
-      }
-    });
-  }
-
-  doc.save("Rapport_PER_UFR_SES.pdf");
+  doc.save("Rapport_PER.pdf");
 }
 
-// ========================
-// FONCTION EXPORT EXCEL
-// ========================
 function exporterEnExcel() {
-  // Vérifie que SheetJS est chargé
-  if (typeof XLSX === 'undefined') {
-    alert("❌ Erreur : SheetJS (xlsx) n'est pas chargé.");
-    return;
-  }
+  if (typeof XLSX === 'undefined') return;
 
   const perListe = JSON.parse(localStorage.getItem("perListe")) || [];
-
-  const data = perListe.map(p => ({
-    "Date": p.date,
-    "Demandeur": p.demandeur,
-    "Service": p.service,
-    "Objet": p.objet,
-    "Montant (FCFA)": p.montant,
-    "Statut": p.montant > 500000 ? "À valider" : "OK"
-  }));
-
-  const ws = XLSX.utils.json_to_sheet(data);
+  const ws = XLSX.utils.json_to_sheet(perListe);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "PER");
-
-  XLSX.writeFile(wb, "Données_PER_UFR_SES.xlsx");
+  XLSX.writeFile(wb, "PER_UFR_SES.xlsx");
 }

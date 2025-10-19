@@ -85,7 +85,8 @@
   <!-- 🔒 PROTECTION PAR RÔLE -->
   <script>
     // 🔑 Seul le comptable peut saisir
-    const rolesAutorises = ["comptable"];
+  // ✅ Rôles autorisés à saisir
+  const rolesAutorises = ["comptable_matiere", "comptable_finance"];
 
     if (!rolesAutorises.includes(user.role)) {
       // Masquer le formulaire

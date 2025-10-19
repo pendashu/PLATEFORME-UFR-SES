@@ -162,3 +162,9 @@ document.getElementById("annulerUpdate").addEventListener("click", function () {
   document.getElementById("sectionDetail").style.display = "none";
   document.getElementById("formMiseAJour").reset();
 });
+const role = user.role;
+
+if (user.role !== "comptable_finance") {
+  alert("❌ Accès refusé : uniquement pour le comptable finance.");
+  window.location.href = "index.html";
+}
