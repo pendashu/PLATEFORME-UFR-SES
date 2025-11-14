@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>💼 Gestion du Budget - UFR SES</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+</head>
+<body>
+
+  <!-- 🔐 Vérification d'authentification -->
+  <script>
+    const user = checkAuth();
+  </script>
+
+  <header>
+    <h1>💼 Gestion du Budget Mensuel</h1>
+    <a href="index.html" class="back">← Retour au menu</a>
+    <a href="login.html" id="logoutBtn" style="font-size: 14px; color: #900;">🔐 Déconnexion</a>
+  </header>
+
+  <main>
+    <!-- Paramètres du budget -->
+    <section class="card">
+      <h2>Paramètres du budget</h2>
+      <label>
+        Budget alloué (FCFA) :
+        <input type="number" id="budgetTotal" value="1500000" />
+      </label>
+      <p><em>Modifiable uniquement par le comptable</em></p>
+    </section>
+
+    <!-- Résumé en temps réel -->
+    <section class="card" id="resumeBudget">
+      <h2>Résumé du budget</h2>
+      <p><strong>Dépenses totales :</strong> <span id="depenses">0 FCFA</span></p>
+      <p><strong>Solde restant :</strong> <span id="solde">1 500 000 FCFA</span></p>
+      <p><strong>Statut :</strong> <span id="statut" style="color: green;">✅ Normal</span></p>
+    </section>
+
+    <!-- Formulaire de dépense -->
+    <section class="card" id="formSection">
+      <h2>Ajouter une dépense</h2>
+      <form id="formDepense">
+        <label>Motif de la dépense :</label>
+        <input type="text" id="motif" required />
+
+        <label>Montant (FCFA) :</label>
+        <input type="number" id="montant" required />
+
+        <button type="submit">Enregistrer la dépense</button>
+      </form>
+    </section>
+
+    <!-- Liste des dépenses -->
+    <section class="card">
+      <h2>Liste des dépenses</h2>
+      <ul id="listeDepenses">
+        <li>Aucune dépense enregistrée.</li>
+      </ul>
+    </section>
+  </main>
+
+  <!-- 🔒 Protection par rôle -->
+  <script>
+    // Rôles autorisés à saisir
+  const rolesAutorises = ["comptable_matiere", "comptable_finance"];
+
+
+    if (!rolesAutorises.includes(user.role)) {
+      // Masquer le formulaire
+      document.getElementById("formSection").style.display = "none";
+
+      // Désactiver tous les champs
+      document.querySelectorAll("input, button").forEach(el => {
+        el.disabled = true;
+        el.style.opacity = "0.6";
+      });
+
+      // Bloquer toute soumission
+      document.querySelectorAll("form").forEach(form => {
+        form.addEventListener("submit", function(e) {
+          e.preventDefault();
+          alert(`❌ Interdit : seul le comptable peut enregistrer des dépenses.`);
+        });
+      });
+
+      // Ajouter message lecture seule
+      const notice = document.createElement("div");
+      notice.textContent = `👀 Mode lecture seule – Connecté(e) en tant que ${user.role}`;
+      notice.style = "background: #f0f8ff; color: #003366; padding: 12px; text-align: center; font-weight: bold; margin: 15px 20px; border-radius: 5px; border: 1px solid #b3d9ff;";
+      document.querySelector("main").prepend(notice);
+    }
+
+    // Afficher le nom dans le bouton déconnexion
+    document.getElementById("logoutBtn").addEventListener("click", function(e) {
+      if (confirm("Se déconnecter ?")) {
+        localStorage.removeItem("user");
+      }
+    });
+  </script>
+
+  <!-- 📈 Mise à jour du tableau -->
+  <script src="js/budget.js"></script>
+  <script>
+   user = checkAuth();
+
+  // 🔒 Seul le comptable finance peut accéder à cette page
+  if (user.role !== "comptable_finance") {
+    alert("❌ Accès refusé : cette page est réservée au comptable finance.");
+    window.location.href = "index.html";
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,221 @@
+/* === STYLE GLOBAL === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f7f9fc;
+  color: #333;
+  line-height: 1.6;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  font-size: 1em;
+}
+
+/* === HEADER === */
+header {
+  background: #003366;
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+header h1 {
+  font-size: 1.5em;
+}
+
+header p {
+  font-size: 1em;
+  opacity: 0.9;
+}
+
+#logoutBtn {
+  background: #d32f2f;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+#logoutBtn:hover {
+  background: #b71c1c;
+}
+
+/* === HERO SECTION === */
+.hero {
+  text-align: center;
+  padding: 30px 20px;
+  background: #003366;
+  color: white;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.hero h2 {
+  margin: 10px 0 5px;
+  font-size: 1.3em;
+}
+
+.hero p {
+  font-size: 0.9em;
+  opacity: 0.9;
+}
+
+/* === GRILLE DES MODULES === */
+.grid-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.card-link {
+  background: #e3f2fd;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+  color: #0d47a1;
+  text-decoration: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s, background 0.3s;
+}
+
+.card-link:hover {
+  transform: translateY(-3px);
+  background: #bbdefb;
+}
+
+.card-link i, .card-link img {
+  font-size: 1.5em;
+  margin-bottom: 5px;
+}
+
+/* === RÉSUMÉ RAPIDE === */
+.resume {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin: 30px 0;
+}
+
+.resume h3 {
+  margin-bottom: 15px;
+  color: #003366;
+  text-align: center;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.stat {
+  background: #e8f5e8;
+  padding: 12px;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.95em;
+  border: 1px solid #c8e6c9;
+}
+
+/* === AIDE RAPIDE === */
+.help {
+  background: #fff3cd;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 30px 0;
+  border: 1px solid #ffeaa7;
+}
+
+.help h3 {
+  margin-bottom: 10px;
+  color: #856404;
+  text-align: center;
+}
+
+.help ul {
+  list-style: disc;
+  padding-left: 20px;
+  margin-top: 10px;
+}
+
+.help li {
+  margin: 5px 0;
+  font-size: 0.95em;
+}
+
+/* === OUTILS D'EXPORT === */
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin: 20px 0;
+}
+
+.card h3 {
+  margin-bottom: 15px;
+  color: #003366;
+  text-align: center;
+}
+
+.card button {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  background: #0055aa;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.card button:hover {
+  background: #003d7a;
+}
+
+.card input[type="file"] {
+  padding: 5px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .grid-menu {
+    grid-template-columns: 1fr;
+  }
+}

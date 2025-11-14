@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>⛽ Gestion du Carburant - UFR SES</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+</head>
+<body>
+
+  <!-- 🔐 Vérification d'authentification -->
+  <script>
+    const user = checkAuth();
+  </script>
+
+  <header>
+    <h1>⛽ Gestion du Carburant</h1>
+    <a href="index.html" class="back">← Retour au menu</a>
+    <a href="login.html" id="logoutBtn" style="font-size: 14px; color: #900;">🔐 Déconnexion</a>
+  </header>
+
+  <main>
+    <!-- Formulaire de ravitaillement -->
+    <section class="card" id="formSection">
+      <h2>Enregistrer un ravitaillement</h2>
+      <form id="formCarburant">
+        <label>Date :</label>
+        <input type="date" id="datePlein" required />
+
+        <label>Véhicule :</label>
+        <select id="vehicule">
+          <option value="Toyota Hilux">Toyota Hilux</option>
+          <option value="Peugeot 504">Peugeot 504</option>
+          <option value="Fourgonnette">Fourgonnette UASZ</option>
+          <option value="Autre">Autre</option>
+        </select>
+
+        <label>Conducteur :</label>
+        <input type="text" id="conducteur" placeholder="Ex: M. Sarr" required />
+
+        <label>Kilométrage actuel (km) :</label>
+        <input type="number" id="kilometrage" placeholder="Ex: 45200" required />
+
+        <label>Quantité ravitaillée (L) :</label>
+        <input type="number" id="quantite" step="0.1" placeholder="Ex: 60.5" required />
+
+        <label>Coût total (FCFA) :</label>
+        <input type="number" id="cout" placeholder="Ex: 60000" required />
+
+        <button type="submit">Enregistrer le plein</button>
+      </form>
+    </section>
+
+    <!-- Résumé de la consommation -->
+    <section class="card">
+      <h2>Résumé de la consommation</h2>
+      <p><strong>Nombre de pleins enregistrés :</strong> <span id="nbPleins">0</span></p>
+      <p><strong>Consommation moyenne globale :</strong> <span id="consoMoyenne">0 L/100km</span></p>
+      <p><strong>Dernier ravitaillement :</strong> <span id="dernierPlein">Aucun</span></p>
+    </section>
+
+    <!-- Historique des pleins -->
+    <section class="card">
+      <h2>Historique des ravitaillements</h2>
+      <table id="tableauPleins">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Véhicule</th>
+            <th>Conducteur</th>
+            <th>Km</th>
+            <th>Litres</th>
+            <th>Coût</th>
+            <th>Conso</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="7">Aucun plein enregistré.</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- 🔒 PROTECTION PAR RÔLE -->
+  <script>
+    // 🔑 Seul le comptable peut saisir
+  // ✅ Rôles autorisés à saisir
+  const rolesAutorises = ["comptable_matiere", "comptable_finance"];
+
+    if (!rolesAutorises.includes(user.role)) {
+      // Masquer le formulaire
+      document.getElementById("formSection").style.display = "none";
+
+      // Désactiver tous les champs et boutons
+      document.querySelectorAll("input, select, button, textarea").forEach(el => {
+        el.disabled = true;
+        el.style.opacity = "0.6";
+      });
+
+      // Bloquer toute soumission (même forcée)
+      document.querySelectorAll("form").forEach(form => {
+        form.addEventListener("submit", function(e) {
+          e.preventDefault();
+          alert(`❌ Action bloquée : seul le comptable peut enregistrer un ravitaillement.`);
+        });
+      });
+
+      // Ajouter un message visible
+      const notice = document.createElement("div");
+      notice.textContent = `📘 Mode lecture seule – Connecté(e) en tant que ${user.role}`;
+      notice.style = "background: #e8f5e8; color: #2e7d32; padding: 14px; text-align: center; font-weight: bold; margin: 20px 20px; border-radius: 5px; border: 1px solid #a5d6a7;";
+      document.querySelector("main").prepend(notice);
+    }
+
+    // 🔐 Confirmation de déconnexion
+    document.getElementById("logoutBtn").addEventListener("click", function(e) {
+      if (confirm("Voulez-vous vraiment vous déconnecter ?")) {
+        localStorage.removeItem("user");
+      } else {
+        e.preventDefault();
+      }
+    });
+  </script>
+
+  <!-- 📥 Logique métier -->
+  <script src="js/carburant.js"></script>
+
+</body>
+</html>

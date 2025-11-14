@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📋 Plan de Passation - UFR SES</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <!-- Charger auth.js -->
+  <script src="js/auth.js"></script>
+</head>
+<body>
+
+  <!-- ✅ Vérification d'authentification -->
+  <script>
+    const user = checkAuth(); // Récupère l'utilisateur
+
+    // 🔐 Accès réservé au comptable finance et au directeur
+    if (user.role !== "comptable_finance" && user.role !== "directeur") {
+      alert("❌ Accès refusé : page réservée au comptable finance et au directeur.");
+      window.location.href = "index.html";
+    }
+  </script>
+
+  <header>
+    <h1>📋 Suivi du Plan de Passation des Marchés</h1>
+    <a href="index.html" class="back">← Retour au menu</a>
+  </header>
+
+  <main>
+    <!-- 🔽 MODE LECTURE SEULE POUR LE DIRECTEUR -->
+    <script>
+      if (user.role === "directeur") {
+        document.querySelectorAll("input[type='text'], input[type='number'], textarea").forEach(input => {
+          input.disabled = true;
+          input.style.backgroundColor = "#f0f0f0";
+        });
+        document.querySelectorAll("button").forEach(btn => btn.style.display = "none");
+        
+        const notice = document.createElement("div");
+        notice.textContent = "👁️ Mode lecture seule – Directeur de l'UFR";
+        notice.style = "background: #e3f2fd; color: #0d47a1; padding: 10px; text-align: center; font-weight: bold;";
+        document.querySelector("main")?.prepend(notice);
+      }
+    </script>
+
+    <!-- 🔽 FORMULAIRE D'AJOUT (visible seulement pour comptable_finance) -->
+    <section class="card">
+      <h2>Ajouter une opération de passation</h2>
+      <form id="formPassation">
+        <label>Référence (ex: PP-001) :</label>
+        <input type="text" id="ref" placeholder="PP-001" required />
+
+        <label>Objet de l'achat :</label>
+        <input type="text" id="objet" placeholder="Ex: Achat de chaises de bureau" required />
+
+        <label>Date du besoin :</label>
+        <input type="date" id="dateBesoin" required />
+
+        <label>Budget estimé (FCFA) :</label>
+        <input type="number" id="budgetEstime" placeholder="600000" required />
+
+        <button type="submit">Enregistrer</button>
+      </form>
+    </section>
+
+    <!-- 🔽 SUIVI DES ÉTAPES -->
+    <section class="card">
+      <h2>Suivi des étapes</h2>
+      <p><em>Cliquez sur une ligne pour mettre à jour son statut.</em></p>
+      <table id="tableauPassation">
+        <thead>
+          <tr>
+            <th>Réf</th>
+            <th>Objet</th>
+            <th>Besoin</th>
+            <th>Consultation</th>
+            <th>Adjudication</th>
+            <th>Livraison</th>
+            <th>Paiement</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="8">Aucune opération enregistrée.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 🔽 MISE À JOUR D'ÉTAPE -->
+    <section class="card" id="sectionDetail" style="display: none;">
+      <h2>Mettre à jour une étape</h2>
+      <p><strong>Opération :</strong> <span id="detailObjet"></span></p>
+      <form id="formMiseAJour">
+        <label>Étape à mettre à jour :</label>
+        <select id="etape" disabled>
+          <option value="consultation">Consultation</option>
+          <option value="adjudication">Adjudication</option>
+          <option value="livraison">Livraison</option>
+          <option value="paiement">Paiement</option>
+        </select>
+
+        <label>Date :</label>
+        <input type="date" id="dateUpdate" required />
+
+        <label>Observations (facultatif) :</label>
+        <textarea id="observation"></textarea>
+
+        <button type="submit">Valider la mise à jour</button>
+        <button type="button" id="annulerUpdate">Annuler</button>
+      </form>
+    </section>
+  </main>
+
+  <!-- ✅ Charger le script métier -->
+  <script src="js/passation.js"></script>
+</body>
+</html>

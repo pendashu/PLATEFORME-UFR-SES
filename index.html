@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Plateforme de Gestion - UFR SES</title>
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- 🔽 Librairies externes -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- 🔽 Scripts -->
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+</head>
+<body>
+
+  <!-- ✅ Vérification d'authentification -->
+  <script>
+    const user = checkAuth();
+  </script>
+
+  <header>
+    <h1>📊 Plateforme de Gestion - UFR SES</h1>
+    <p>Bienvenue, <strong id="welcomeName">Chargement...</strong></p>
+    <a href="login.html" id="logoutBtn" style="font-size: 14px; color: #900;">🔐 Se déconnecter</a>
+  </header>
+
+  <main>
+    <!-- 🔷 Hero section -->
+    <div class="hero">
+      <h2>UFR Sciences Économiques et Sociales</h2>
+      <p>Université Assane Seck de Ziguinchor – M2 MIO</p>
+    </div>
+
+    <!-- 🔷 Grille des modules -->
+    <div class="grid-menu">
+      <a href="budget.html" class="card-link">💼<br>Gérer le budget</a>
+      <a href="per.html" class="card-link">📝<br>Expression de besoin (PER)</a>
+      <a href="stock.html" class="card-link">📦<br>Gérer les stocks</a>
+      <a href="carburant.html" class="card-link">⛽<br>Gérer le carburant</a>
+      <a href="passation.html" class="card-link">📋<br>Plan de passation</a>
+      <a href="dashboard.html" class="card-link">📈<br>Tableau de bord</a>
+    </div>
+
+    <!-- 🔷 Résumé rapide -->
+    <section class="resume">
+      <h3>📊 À la une</h3>
+      <div class="stats">
+        <div class="stat">📄 <strong>2</strong> PER en attente</div>
+        <div class="stat">⚠️ <strong>2</strong> stocks critiques</div>
+        <div class="stat">⛽ <strong>8.1 L/100km</strong></div>
+        <div class="stat">💰 <strong>520 000 FCFA</strong> restants</div>
+      </div>
+    </section>
+
+    <!-- 🔷 Aide rapide -->
+    <section class="help">
+      <h3>ℹ️ Rôles des utilisateurs</h3>
+      <ul>
+        <li><strong>Comptable matière</strong> : Stocks, carburant</li>
+        <li><strong>Comptable finance</strong> : Budget, PER, passation</li>
+        <li><strong>Directeur</strong> : Validation > 500 000 FCFA</li>
+        <li><strong>CSA</strong> : Lecture seule</li>
+      </ul>
+    </section>
+
+    <!-- 🔷 Outils d'export -->
+    <section class="card">
+      <h3>📤 Sauvegarde & Export</h3>
+      <button onclick="exporterDonnees()" style="margin: 5px 0; width: 100%; padding: 10px;">
+        💾 Sauvegarder les données (.json)
+      </button>
+      <button onclick="exporterEnPDF()" style="margin: 5px 0; width: 100%; padding: 10px;">
+        📄 Générer un rapport PDF
+      </button>
+      <button onclick="exporterEnExcel()" style="margin: 5px 0; width: 100%; padding: 10px;">
+        📊 Exporter en Excel (.xlsx)
+      </button>
+      <div style="margin-top: 15px;">
+        <label for="importFile">📁 Restaurer une sauvegarde :</label>
+        <input type="file" id="importFile" accept=".json" onchange="importerDonnees(this.files[0])" style="padding: 5px;" />
+      </div>
+    </section>
+  </main>
+
+  <!-- ✅ Initialisation des données fictives -->
+  <script>
+    function initDonneesFictives() {
+      if (localStorage.getItem("donnees_init")) return;
+
+      localStorage.setItem("budgetTotal", "1500000");
+      
+      const depenses = [
+        { motif: "Fournitures bureau", montant: 280000, date: "2025-07-12" },
+        { motif: "Réparation climatisation", montant: 450000, date: "2025-08-05" }
+      ];
+      localStorage.setItem("depenses", JSON.stringify(depenses));
+
+      localStorage.setItem("perListe", JSON.stringify([
+        { demandeur: "Pr. Diop", service: "MIO", objet: "Imprimante", montant: 650000, date: "2025-08-14", statut: "en attente" }
+      ]));
+
+      localStorage.setItem("materiels", JSON.stringify([
+        { nom: "Ram papier A4", unite: "ram", stock: 15, seuil: 5 },
+        { nom: "Cartouche d'encre", unite: "unité", stock: 4, seuil: 3 }
+      ]));
+
+      localStorage.setItem("pleins", JSON.stringify([
+        { date: "2025-08-10", vehicule: "Toyota Hilux", conducteur: "M. Fall", kilometrage: 45200, quantite: 60.5, cout: 60000 }
+      ]));
+
+      localStorage.setItem("donnees_init", "oui");
+    }
+    initDonneesFictives();
+
+    // ✅ Afficher le nom après que la page soit chargée
+    document.getElementById("welcomeName").textContent = user.name;
+
+    // Confirmation déconnexion
+    document.getElementById("logoutBtn").addEventListener("click", function(e) {
+      if (!confirm("Voulez-vous vous déconnecter ?")) e.preventDefault();
+    });
+  </script>
+</body>
+</html>
