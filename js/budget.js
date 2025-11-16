@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 document.addEventListener("DOMContentLoaded", async () => {
   const user = checkAuth();
   if (!user) return;
@@ -9,11 +10,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+=======
+document.addEventListener("DOMContentLoaded", function () {
+  const depenses = JSON.parse(localStorage.getItem("depenses")) || [];
+>>>>>>> 6ea4c374a12b514e2eb442d07f5c1db21f41fec0
   const listeDepenses = document.getElementById("listeDepenses");
   const depensesEl = document.getElementById("depenses");
   const soldeEl = document.getElementById("solde");
   const statutEl = document.getElementById("statut");
 
+<<<<<<< HEAD
   // Montant total du budget (fixe)
   const budgetTotal = 1500000; // Tu peux aussi le charger depuis une API plus tard
 
@@ -38,6 +44,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const solde = budgetTotal - totalDepenses;
 
   // 🔹 Afficher les totaux
+=======
+  const budgetTotal = parseFloat(localStorage.getItem("budgetTotal")) || 1500000;
+  const totalDepenses = depenses.reduce((sum, d) => sum + parseFloat(d.montant), 0);
+  const solde = budgetTotal - totalDepenses;
+
+  // Afficher les totaux
+>>>>>>> 6ea4c374a12b514e2eb442d07f5c1db21f41fec0
   depensesEl.textContent = `${totalDepenses.toLocaleString()} FCFA`;
   soldeEl.textContent = `${solde.toLocaleString()} FCFA`;
 
@@ -52,13 +65,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     statutEl.style.color = "green";
   }
 
+<<<<<<< HEAD
   // 🔹 Afficher l'historique
+=======
+  // Afficher l'historique
+>>>>>>> 6ea4c374a12b514e2eb442d07f5c1db21f41fec0
   listeDepenses.innerHTML = "";
   if (depenses.length === 0) {
     listeDepenses.innerHTML = "<li>Aucune dépense enregistrée.</li>";
   } else {
     depenses.forEach(d => {
       const li = document.createElement("li");
+<<<<<<< HEAD
       li.textContent = `${d.date} : ${d.motif} – ${parseFloat(d.montant).toLocaleString()} FCFA`;
       listeDepenses.appendChild(li);
     });
@@ -89,3 +107,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   };
 });
+=======
+      li.textContent = `${d.date} : ${d.motif} – ${d.montant} FCFA`;
+      listeDepenses.appendChild(li);
+    });
+  }
+});
+const role = user.role;
+
+if (user.role !== "comptable_finance") {
+  alert("❌ Accès refusé : uniquement pour le comptable finance.");
+  window.location.href = "index.html";
+}
+>>>>>>> 6ea4c374a12b514e2eb442d07f5c1db21f41fec0

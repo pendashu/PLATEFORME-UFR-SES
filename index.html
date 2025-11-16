@@ -23,7 +23,11 @@
 
   <header>
     <h1>📊 Plateforme de Gestion - UFR SES</h1>
+<<<<<<< HEAD
     <p>Bienvenue, <strong id="welcomeName">Chargement...</strong></p>
+=======
+    <p>Bienvenue, <span id="welcomeName">Chargement...</span></p>
+>>>>>>> 6ea4c374a12b514e2eb442d07f5c1db21f41fec0
     <a href="login.html" id="logoutBtn" style="font-size: 14px; color: #900;">🔐 Se déconnecter</a>
   </header>
 
@@ -90,6 +94,7 @@
     function initDonneesFictives() {
       if (localStorage.getItem("donnees_init")) return;
 
+<<<<<<< HEAD
       localStorage.setItem("budgetTotal", "1500000");
       
       const depenses = [
@@ -97,6 +102,15 @@
         { motif: "Réparation climatisation", montant: 450000, date: "2025-08-05" }
       ];
       localStorage.setItem("depenses", JSON.stringify(depenses));
+=======
+      // Exemple de données
+      localStorage.setItem("budgetTotal", "1500000");
+      
+      localStorage.setItem("depenses", JSON.stringify([
+        { motif: "Fournitures bureau", montant: 280000, date: "2025-07-12" },
+        { motif: "Réparation climatisation", montant: 450000, date: "2025-08-05" }
+      ]));
+>>>>>>> 6ea4c374a12b514e2eb442d07f5c1db21f41fec0
 
       localStorage.setItem("perListe", JSON.stringify([
         { demandeur: "Pr. Diop", service: "MIO", objet: "Imprimante", montant: 650000, date: "2025-08-14", statut: "en attente" }
@@ -115,7 +129,11 @@
     }
     initDonneesFictives();
 
+<<<<<<< HEAD
     // ✅ Afficher le nom après que la page soit chargée
+=======
+    // Afficher le nom
+>>>>>>> 6ea4c374a12b514e2eb442d07f5c1db21f41fec0
     document.getElementById("welcomeName").textContent = user.name;
 
     // Confirmation déconnexion
@@ -123,5 +141,49 @@
       if (!confirm("Voulez-vous vous déconnecter ?")) e.preventDefault();
     });
   </script>
+<<<<<<< HEAD
+=======
+  <script>
+  // Affiche le nom de l'utilisateur
+   user = JSON.parse(localStorage.getItem("user"));
+  if (user) {
+    document.getElementById("welcomeName").textContent = user.name;
+  }
+</script>
+<script>
+  function initDonneesFictives() {
+    if (localStorage.getItem("donnees_init")) return;
+
+    localStorage.setItem("budgetTotal", "1500000");
+    
+    localStorage.setItem("depenses", JSON.stringify([
+      { motif: "Fournitures bureau", montant: 280000, date: "2025-07-12" },
+      { motif: "Réparation climatisation", montant: 450000, date: "2025-08-05" }
+    ]));
+
+    localStorage.setItem("perListe", JSON.stringify([
+      { demandeur: "Pr. Diop", service: "MIO", objet: "Imprimante", montant: 650000, date: "2025-08-14", statut: "en attente" }
+    ]));
+
+    localStorage.setItem("materiels", JSON.stringify([
+      { nom: "Ram papier A4", unite: "ram", stock: 15, seuil: 5 },
+      { nom: "Cartouche d'encre", unite: "unité", stock: 4, seuil: 3 }
+    ]));
+
+    localStorage.setItem("pleins", JSON.stringify([
+      { date: "2025-08-10", vehicule: "Toyota Hilux", conducteur: "M. Fall", kilometrage: 45200, quantite: 60.5, cout: 60000 }
+    ]));
+
+    localStorage.setItem("donnees_init", "oui");
+  }
+  initDonneesFictives();
+</script>
+<script>
+   user = JSON.parse(localStorage.getItem("user"));
+  if (user) {
+    document.getElementById("welcomeName").textContent = user.name;
+  }
+</script>
+>>>>>>> 6ea4c374a12b514e2eb442d07f5c1db21f41fec0
 </body>
 </html>
