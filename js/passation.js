@@ -1,170 +1,100 @@
-// Chargement au démarrage
-document.addEventListener("DOMContentLoaded", function () {
-  const operations = JSON.parse(localStorage.getItem("passation")) || [];
-  afficherOperations(operations);
-});
+// Charger tous les plans de passation
+async function chargerPassations() {
+  try {
+    const response = await fetch("https://backend-ufr-ses-i9bo.onrender.com/api/passation");
+    if (!response.ok) throw new Error("Erreur réseau");
 
-// Ajouter une nouvelle opération
-document.getElementById("formPassation").addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  const ref = document.getElementById("ref").value;
-  const objet = document.getElementById("objet").value;
-  const dateBesoin = document.getElementById("dateBesoin").value;
-  const budgetEstime = parseInt(document.getElementById("budgetEstime").value);
-
-  // Récupérer les opérations existantes
-  let operations = JSON.parse(localStorage.getItem("passation")) || [];
-
-  // Vérifier si la référence existe déjà
-  if (operations.some(op => op.ref === ref)) {
-    alert(`⚠️ Une opération avec la référence "${ref}" existe déjà.`);
-    return;
+    const passations = await response.json();
+    afficherPassations(passations);
+  } catch (err) {
+    console.error("Erreur lors du chargement :", err);
+    alert("Impossible de charger le plan de passation.");
   }
+}
 
-  // Ajouter la nouvelle opération
-  operations.push({
-    ref,
+// Ajouter un nouveau lot
+async function ajouterPassation(lot, objet, typeMarche, montantEstime, procedurePassation, trimestre, annee, statut) {
+  const nouvellePassation = {
+    lot,
     objet,
-    dates: {
-      besoin: dateBesoin,
-      consultation: "",
-      adjudication: "",
-      livraison: "",
-      paiement: ""
-    },
-    observation: { consultation: "", adjudication: "", livraison: "", paiement: "" },
-    budgetEstime
-  });
+    typeMarche,
+    montantEstime: parseInt(montantEstime),
+    procedurePassation,
+    trimestre,
+    annee: parseInt(annee),
+    statut: statut || "En préparation"
+  };
 
-  // Sauvegarder
-  localStorage.setItem("passation", JSON.stringify(operations));
+  try {
+    const response = await fetch("https://backend-ufr-ses-i9bo.onrender.com/api/passation", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(nouvellePassation)
+    });
 
-  // Mettre à jour l'affichage
-  afficherOperations(operations);
+    if (response.ok) {
+      alert("✅ Lot ajouté avec succès !");
+      chargerPassations();
+    } else {
+      alert("❌ Erreur lors de l'ajout.");
+    }
+  } catch (err) {
+    console.error("Erreur :", err);
+  }
+}
 
-  // Réinitialiser le formulaire
-  this.reset();
-});
-
-// Afficher toutes les opérations
-function afficherOperations(operations) {
-  const tbody = document.querySelector("#tableauPassation tbody");
+// Afficher les lots
+function afficherPassations(passations) {
+  const tbody = document.querySelector("#tableau-passation tbody");
   tbody.innerHTML = "";
 
-  if (operations.length === 0) {
-    tbody.innerHTML = "<tr><td colspan='8'>Aucune opération enregistrée.</td></tr>";
-    return;
-  }
-
-  operations.forEach((op, index) => {
+  if (passations.length === 0) {
     const tr = document.createElement("tr");
-    tr.dataset.index = index;
-
-    // Générer les cellules pour chaque étape
-    let statut = "En cours";
-    let statutClass = "ok";
-
-    const consultation = op.dates.consultation ? `<strong>${op.dates.consultation}</strong>` : '<span style="color:#999">–</span>';
-    const adjudication = op.dates.adjudication ? `<strong>${op.dates.adjudication}</strong>` : '<span style="color:#999">–</span>';
-    const livraison = op.dates.livraison ? `<strong>${op.dates.livraison}</strong>` : '<span style="color:#999">–</span>';
-    const paiement = op.dates.paiement ? `<strong>${op.dates.paiement}</strong>` : '<span style="color:#999">–</span>';
-
-    // Déterminer le statut global
-    if (op.dates.paiement) {
-      statut = "✅ Terminé";
-      statutClass = "ok";
-    } else if (op.dates.livraison) {
-      statut = "🔄 Paiement en cours";
-      statutClass = "alert";
-    } else if (op.dates.adjudication) {
-      statut = "🚚 Livraison prévue";
-      statutClass = "ok";
-    } else if (op.dates.consultation) {
-      statut = "📩 En adjudication";
-      statutClass = "ok";
-    } else {
-      statut = "📩 Consultation en cours";
-      statutClass = "ok";
-    }
-
-    tr.innerHTML = `
-      <td><strong>${op.ref}</strong></td>
-      <td>${op.objet}</td>
-      <td>${op.dates.besoin}</td>
-      <td class="clickable">${consultation}</td>
-      <td class="clickable">${adjudication}</td>
-      <td class="clickable">${livraison}</td>
-      <td class="clickable">${paiement}</td>
-      <td class="${statutClass}"><strong>${statut}</strong></td>
-    `;
+    tr.innerHTML = "<td colspan='9'>Aucun lot enregistré.</td>";
     tbody.appendChild(tr);
-  });
-
-  // Ajouter les événements de clic sur les cellules cliquables
-  document.querySelectorAll(".clickable").forEach(cell => {
-    cell.addEventListener("click", function () {
-      const row = this.closest("tr");
-      const index = row.dataset.index;
-      const col = this.cellIndex;
-
-      let etape = "";
-      if (col === 4) etape = "consultation";
-      else if (col === 5) etape = "adjudication";
-      else if (col === 6) etape = "livraison";
-      else if (col === 7) etape = "paiement";
-      else return;
-
-      // Charger les données
-      const operations = JSON.parse(localStorage.getItem("passation")) || [];
-      const op = operations[index];
-
-      if (op.dates[etape]) {
-        alert(`Étape déjà complétée le ${op.dates[etape]}`);
-        return;
-      }
-
-      // Afficher le panneau de mise à jour
-      document.getElementById("detailObjet").textContent = op.objet;
-      document.getElementById("etape").value = etape;
-      document.getElementById("sectionDetail").style.display = "block";
-      document.getElementById("formMiseAJour").dataset.index = index;
-      document.getElementById("formMiseAJour").dataset.etape = etape;
+  } else {
+    passations.forEach(p => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${p.lot}</td>
+        <td>${p.objet}</td>
+        <td>${p.typeMarche}</td>
+        <td>${p.montantEstime.toLocaleString()}</td>
+        <td>${p.procedurePassation}</td>
+        <td>${p.trimestre}</td>
+        <td>${p.annee}</td>
+        <td>${p.statut}</td>
+        <td><button onclick="supprimerPassation('${p._id}')">Supprimer</button></td>
+      `;
+      tbody.appendChild(tr);
     });
-  });
+  }
 }
 
-// Gérer la mise à jour
-document.getElementById("formMiseAJour").addEventListener("submit", function (e) {
-  e.preventDefault();
+// Supprimer un lot
+async function supprimerPassation(id) {
+  if (!confirm("Voulez-vous vraiment supprimer ce lot ?")) return;
 
-  const index = this.dataset.index;
-  const etape = this.dataset.etape;
-  const date = document.getElementById("dateUpdate").value;
-  const observation = document.getElementById("observation").value;
+  try {
+    const response = await fetch(`https://backend-ufr-ses-i9bo.onrender.com/api/passation/${id}`, {
+      method: "DELETE"
+    });
 
-  let operations = JSON.parse(localStorage.getItem("passation")) || [];
-  operations[index].dates[etape] = date;
-  operations[index].observation[etape] = observation;
-
-  localStorage.setItem("passation", JSON.stringify(operations));
-
-  // Masquer le panneau
-  document.getElementById("sectionDetail").style.display = "none";
-  this.reset();
-
-  // Rafraîchir l'affichage
-  afficherOperations(operations);
-});
-
-// Annuler la mise à jour
-document.getElementById("annulerUpdate").addEventListener("click", function () {
-  document.getElementById("sectionDetail").style.display = "none";
-  document.getElementById("formMiseAJour").reset();
-});
-const role = user.role;
-
-if (user.role !== "comptable_finance") {
-  alert("❌ Accès refusé : uniquement pour le comptable finance.");
-  window.location.href = "index.html";
+    if (response.ok) {
+      chargerPassations();
+    } else {
+      alert("❌ Échec de la suppression.");
+    }
+  } catch (err) {
+    console.error("Erreur :", err);
+  }
 }
+
+// Au chargement
+document.addEventListener("DOMContentLoaded", () => {
+  chargerPassations();
+  window.ajouterPassation = ajouterPassation;
+  window.supprimerPassation = supprimerPassation;
+});

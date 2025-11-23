@@ -6,39 +6,36 @@
   <title>Plateforme de Gestion - UFR SES</title>
   <link rel="stylesheet" href="css/style.css" />
 
-  <!-- 🔽 Librairies externes -->
+  <!-- Librairies externes -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-  <!-- 🔽 Scripts -->
+  <!-- Scripts internes -->
   <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
 </head>
+
 <body>
 
-  <!-- ✅ Vérification d'authentification -->
+  <!-- Vérification d'authentification -->
   <script>
     const user = checkAuth();
   </script>
 
   <header>
     <h1>📊 Plateforme de Gestion - UFR SES</h1>
-<<<<<<< HEAD
     <p>Bienvenue, <strong id="welcomeName">Chargement...</strong></p>
-=======
-    <p>Bienvenue, <span id="welcomeName">Chargement...</span></p>
->>>>>>> 6ea4c374a12b514e2eb442d07f5c1db21f41fec0
     <a href="login.html" id="logoutBtn" style="font-size: 14px; color: #900;">🔐 Se déconnecter</a>
   </header>
 
   <main>
-    <!-- 🔷 Hero section -->
+    <!-- Hero section -->
     <div class="hero">
       <h2>UFR Sciences Économiques et Sociales</h2>
       <p>Université Assane Seck de Ziguinchor – M2 MIO</p>
     </div>
 
-    <!-- 🔷 Grille des modules -->
+    <!-- Menu -->
     <div class="grid-menu">
       <a href="budget.html" class="card-link">💼<br>Gérer le budget</a>
       <a href="per.html" class="card-link">📝<br>Expression de besoin (PER)</a>
@@ -48,7 +45,13 @@
       <a href="dashboard.html" class="card-link">📈<br>Tableau de bord</a>
     </div>
 
-    <!-- 🔷 Résumé rapide -->
+    <!-- Liste PER -->
+    <h2>Liste des PER</h2>
+    <div id="pers-list">
+      <!-- Le backend va remplir via app.js -->
+    </div>
+
+    <!-- Statistiques -->
     <section class="resume">
       <h3>📊 À la une</h3>
       <div class="stats">
@@ -59,7 +62,7 @@
       </div>
     </section>
 
-    <!-- 🔷 Aide rapide -->
+    <!-- Rôles utilisateur -->
     <section class="help">
       <h3>ℹ️ Rôles des utilisateurs</h3>
       <ul>
@@ -70,18 +73,22 @@
       </ul>
     </section>
 
-    <!-- 🔷 Outils d'export -->
+    <!-- Export -->
     <section class="card">
       <h3>📤 Sauvegarde & Export</h3>
+
       <button onclick="exporterDonnees()" style="margin: 5px 0; width: 100%; padding: 10px;">
         💾 Sauvegarder les données (.json)
       </button>
+
       <button onclick="exporterEnPDF()" style="margin: 5px 0; width: 100%; padding: 10px;">
         📄 Générer un rapport PDF
       </button>
+
       <button onclick="exporterEnExcel()" style="margin: 5px 0; width: 100%; padding: 10px;">
         📊 Exporter en Excel (.xlsx)
       </button>
+
       <div style="margin-top: 15px;">
         <label for="importFile">📁 Restaurer une sauvegarde :</label>
         <input type="file" id="importFile" accept=".json" onchange="importerDonnees(this.files[0])" style="padding: 5px;" />
@@ -89,101 +96,20 @@
     </section>
   </main>
 
-  <!-- ✅ Initialisation des données fictives -->
+  <!-- Affichage du nom utilisateur -->
   <script>
-    function initDonneesFictives() {
-      if (localStorage.getItem("donnees_init")) return;
-
-<<<<<<< HEAD
-      localStorage.setItem("budgetTotal", "1500000");
-      
-      const depenses = [
-        { motif: "Fournitures bureau", montant: 280000, date: "2025-07-12" },
-        { motif: "Réparation climatisation", montant: 450000, date: "2025-08-05" }
-      ];
-      localStorage.setItem("depenses", JSON.stringify(depenses));
-=======
-      // Exemple de données
-      localStorage.setItem("budgetTotal", "1500000");
-      
-      localStorage.setItem("depenses", JSON.stringify([
-        { motif: "Fournitures bureau", montant: 280000, date: "2025-07-12" },
-        { motif: "Réparation climatisation", montant: 450000, date: "2025-08-05" }
-      ]));
->>>>>>> 6ea4c374a12b514e2eb442d07f5c1db21f41fec0
-
-      localStorage.setItem("perListe", JSON.stringify([
-        { demandeur: "Pr. Diop", service: "MIO", objet: "Imprimante", montant: 650000, date: "2025-08-14", statut: "en attente" }
-      ]));
-
-      localStorage.setItem("materiels", JSON.stringify([
-        { nom: "Ram papier A4", unite: "ram", stock: 15, seuil: 5 },
-        { nom: "Cartouche d'encre", unite: "unité", stock: 4, seuil: 3 }
-      ]));
-
-      localStorage.setItem("pleins", JSON.stringify([
-        { date: "2025-08-10", vehicule: "Toyota Hilux", conducteur: "M. Fall", kilometrage: 45200, quantite: 60.5, cout: 60000 }
-      ]));
-
-      localStorage.setItem("donnees_init", "oui");
+    const savedUser = JSON.parse(localStorage.getItem("user"));
+    if (savedUser) {
+      document.getElementById("welcomeName").textContent = savedUser.name;
     }
-    initDonneesFictives();
 
-<<<<<<< HEAD
-    // ✅ Afficher le nom après que la page soit chargée
-=======
-    // Afficher le nom
->>>>>>> 6ea4c374a12b514e2eb442d07f5c1db21f41fec0
-    document.getElementById("welcomeName").textContent = user.name;
-
-    // Confirmation déconnexion
     document.getElementById("logoutBtn").addEventListener("click", function(e) {
       if (!confirm("Voulez-vous vous déconnecter ?")) e.preventDefault();
     });
   </script>
-<<<<<<< HEAD
-=======
-  <script>
-  // Affiche le nom de l'utilisateur
-   user = JSON.parse(localStorage.getItem("user"));
-  if (user) {
-    document.getElementById("welcomeName").textContent = user.name;
-  }
-</script>
-<script>
-  function initDonneesFictives() {
-    if (localStorage.getItem("donnees_init")) return;
 
-    localStorage.setItem("budgetTotal", "1500000");
-    
-    localStorage.setItem("depenses", JSON.stringify([
-      { motif: "Fournitures bureau", montant: 280000, date: "2025-07-12" },
-      { motif: "Réparation climatisation", montant: 450000, date: "2025-08-05" }
-    ]));
+  <!-- Connexion au backend -->
+  <script src="app.js"></script>
 
-    localStorage.setItem("perListe", JSON.stringify([
-      { demandeur: "Pr. Diop", service: "MIO", objet: "Imprimante", montant: 650000, date: "2025-08-14", statut: "en attente" }
-    ]));
-
-    localStorage.setItem("materiels", JSON.stringify([
-      { nom: "Ram papier A4", unite: "ram", stock: 15, seuil: 5 },
-      { nom: "Cartouche d'encre", unite: "unité", stock: 4, seuil: 3 }
-    ]));
-
-    localStorage.setItem("pleins", JSON.stringify([
-      { date: "2025-08-10", vehicule: "Toyota Hilux", conducteur: "M. Fall", kilometrage: 45200, quantite: 60.5, cout: 60000 }
-    ]));
-
-    localStorage.setItem("donnees_init", "oui");
-  }
-  initDonneesFictives();
-</script>
-<script>
-   user = JSON.parse(localStorage.getItem("user"));
-  if (user) {
-    document.getElementById("welcomeName").textContent = user.name;
-  }
-</script>
->>>>>>> 6ea4c374a12b514e2eb442d07f5c1db21f41fec0
 </body>
 </html>

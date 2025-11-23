@@ -5,13 +5,13 @@
   <title>📝 Expression de Besoin (PER) - UFR SES</title>
   <link rel="stylesheet" href="css/style.css" />
   <script src="js/auth.js"></script>
-  <script src="js/main.js"></script>
 </head>
 <body>
 
   <!-- 🔐 Vérification d'authentification -->
   <script>
     const user = checkAuth();
+    if (!user) window.location.href = "login.html";
   </script>
 
   <header>
@@ -45,7 +45,6 @@
 
         <button type="submit">Soumettre la demande</button>
       </form>
-
       <div id="alerte" style="margin-top: 15px; font-weight: bold;"></div>
     </section>
 
@@ -60,44 +59,88 @@
 
   <!-- 🔒 Protection par rôle -->
   <script>
-  // ✅ Rôles autorisés à saisir
-  const rolesAutorises = ["comptable_matiere", "comptable_finance"];
-
+    const rolesAutorises = ["comptable_matiere", "comptable_finance"];
     if (!rolesAutorises.includes(user.role)) {
-      // Masquer le formulaire
       document.getElementById("formSection").style.display = "none";
-
-      // Désactiver tout champ
       document.querySelectorAll("input, textarea, select, button").forEach(el => {
         el.disabled = true;
         el.style.opacity = "0.6";
       });
 
-      // Bloquer soumission
-      document.querySelectorAll("form").forEach(form => {
-        form.addEventListener("submit", function(e) {
-          e.preventDefault();
-          alert(`❌ Impossible : seul le comptable peut déposer un PER.`);
-        });
-      });
-
-      // Message lecture seule
       const notice = document.createElement("div");
-      notice.textContent = `👁️ Lecture seule – Vous êtes connecté(e) en tant que ${user.role}`;
+      notice.textContent = `👁️ Lecture seule – Connecté(e) en tant que ${user.role}`;
       notice.style = "background: #fff3cd; color: #856404; padding: 12px; text-align: center; font-weight: bold; margin: 15px 20px; border-radius: 5px;";
       document.querySelector("main").prepend(notice);
     }
 
-    // Gestion déconnexion
-    document.getElementById("logoutBtn").addEventListener("click", function(e) {
-      if (confirm("Voulez-vous vous déconnecter ?")) {
-        localStorage.removeItem("user");
-      }
+    document.getElementById("logoutBtn").addEventListener("click", function() {
+      if (confirm("Voulez-vous vous déconnecter ?")) localStorage.removeItem("user");
     });
   </script>
 
-  <!-- 📥 Logique métier -->
-  <script src="js/per.js"></script>
+  <!-- 📥 Logique PER avec fetch -->
+  <script>
+    const API = "https://backend-ufr-ses-i9bo.onrender.com/api/per";
+    const listePER = document.getElementById("listePER");
+    const alerte = document.getElementById("alerte");
+
+    // Charger les PER depuis le backend
+    async function chargerPER() {
+      try {
+        const res = await fetch(API);
+        const data = res.ok ? await res.json() : [];
+        listePER.innerHTML = "";
+        if (data.length === 0) {
+          listePER.innerHTML = "<li>Aucune demande enregistrée.</li>";
+        } else {
+          data.forEach(per => {
+            const li = document.createElement("li");
+            li.textContent = `${per.date} – ${per.demandeur} (${per.service}) : ${per.objet} – ${parseFloat(per.montant).toLocaleString()} FCFA [${per.statut}]`;
+            listePER.appendChild(li);
+          });
+        }
+      } catch (err) {
+        console.error(err);
+        listePER.innerHTML = "<li>Impossible de charger les données du serveur.</li>";
+      }
+    }
+
+    // Soumettre un PER
+    document.getElementById("formPER").addEventListener("submit", async e => {
+      e.preventDefault();
+      const nouvellePER = {
+        demandeur: document.getElementById("demandeur").value,
+        service: document.getElementById("service").value,
+        objet: document.getElementById("objet").value,
+        montant: parseFloat(document.getElementById("montant").value),
+        date: new Date().toISOString().slice(0,10)
+      };
+
+      try {
+        const res = await fetch(API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(nouvellePER)
+        });
+        if (res.ok) {
+          alerte.textContent = "✅ PER soumis avec succès !";
+          alerte.style.color = "green";
+          document.getElementById("formPER").reset();
+          chargerPER();
+        } else {
+          alerte.textContent = "❌ Erreur lors de la soumission.";
+          alerte.style.color = "red";
+        }
+      } catch (err) {
+        console.error(err);
+        alerte.textContent = "❌ Impossible de se connecter au serveur.";
+        alerte.style.color = "red";
+      }
+    });
+
+    // Charger les PER au démarrage
+    chargerPER();
+  </script>
 
 </body>
 </html>

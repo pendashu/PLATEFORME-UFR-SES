@@ -1,115 +1,14 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <title>📈 Tableau de Bord - UFR SES</title>
-  <link rel="stylesheet" href="css/style.css" />
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const response = await fetch("https://backend-ufr-ses-i9bo.onrender.com/api/dashboard");
+    const data = await response.json();
 
-  <!-- 🔽 Librairies et scripts nécessaires -->
-  <script src="js/auth.js"></script>
-  <script src="js/main.js"></script>
-</head>
-<body>
-
-  <!-- ✅ 1. VÉRIFICATION D'AUTHENTIFICATION -->
-  <script>
-    const user = checkAuth(); // Redirige si non connecté
-  </script>
-
-  <!-- ✅ 2. EN-TÊTE DE LA PAGE -->
-  <header>
-    <h1>📈 Tableau de Bord</h1>
-    <a href="index.html" class="back">← Retour</a>
-    <a href="login.html" id="logoutBtn" style="font-size: 14px; color: #900;">🔐 Se déconnecter</a>
-  </header>
-
-  <!-- ✅ 3. MESSAGE POUR LE CSA -->
-  <script>
-    if (user.role === "csa") {
-      const notice = document.createElement("div");
-      notice.textContent = "⚠️ Mode lecture seule – Conseil Scientifique Académique";
-      notice.style = "background: #fff3cd; color: #856404; padding: 12px; text-align: center; font-weight: bold; margin: 15px 20px; border-radius: 5px; border: 1px solid #ffeaa7;";
-      document.querySelector("header").after(notice);
-    }
-  </script>
-
-  <main>
-    <!-- 🔴 PER en attente (visible uniquement par le directeur) -->
-    <section class="card" id="section-per-urgent" style="display: none;">
-      <h2>⚠️ PER en attente de validation</h2>
-      <p>Un besoin dépasse 500 000 FCFA. Cette section n'est visible que par le directeur.</p>
-    </section>
-
-    <!-- 🟢 Informations utilisateur -->
-    <section class="card">
-      <h2>Bienvenue</h2>
-      <p>Vous êtes connecté(e) en tant que <strong id="roleDisplay"></strong>.</p>
-      <p><em>Rôle : <span id="roleValue"></span></em></p>
-    </section>
-
-    <!-- 💾 Bouton de sauvegarde -->
-    <section class="card">
-      <h2>📤 Sauvegarde des données</h2>
-      <button onclick="exporterDonnees()" style="
-        background: #0055aa;
-        color: white;
-        border: none;
-        padding: 12px;
-        font-size: 16px;
-        border-radius: 5px;
-        cursor: pointer;
-        width: 100%;
-        margin: 5px 0;
-      ">
-        💾 Sauvegarder toutes les données (.json)
-      </button>
-    </section>
-  </main>
-
-  <!-- ✅ 4. SCRIPTS FINAUX (après le contenu) -->
-  <script>
-    // Afficher le rôle de l'utilisateur
-    document.getElementById("roleDisplay").textContent = user.name;
-    document.getElementById("roleValue").textContent = user.role;
-
-    // Gestion du bouton de déconnexion
-    document.getElementById("logoutBtn").addEventListener("click", function(e) {
-      const confirmLogout = confirm("Voulez-vous vraiment vous déconnecter ?");
-      if (confirmLogout) {
-        localStorage.removeItem("user");
-        window.location.href = "login.html";
-      } else {
-        e.preventDefault();
-      }
-    });
-
-    // Gestion des rôles
-    if (user.role === "directeur") {
-      document.getElementById("section-per-urgent").style.display = "block";
-    }
-
-    // Mode lecture seule pour le CSA
-    if (user.role === "csa") {
-      document.querySelectorAll("form, button[type='submit']").forEach(el => el.style.display = "none");
-      document.querySelectorAll("input, select, textarea").forEach(inp => inp.disabled = true);
-    }
-  </script>
-<script>
-   user = checkAuth();
-
-  // Mode lecture seule pour CSA
-  if (user.role === "csa") {
-    document.querySelectorAll("form, button[type='submit']").forEach(el => el.style.display = "none");
-    const notice = document.createElement("div");
-    notice.textContent = "👁️ Mode lecture seule – Conseil Scientifique Académique";
-    notice.style = "background: #fff3cd; color: #856404; padding: 10px; text-align: center;";
-    document.querySelector("main").prepend(notice);
+    // Affiche les chiffres
+    document.getElementById("total-budget").textContent = data.resume.totalBudget.toLocaleString();
+    document.getElementById("per-en-attente").textContent = data.resume.perEnAttente;
+    document.getElementById("stocks-critiques").textContent = data.resume.stocksCritiques;
+    document.getElementById("consommation-moyenne").textContent = data.resume.consommationMoyenne;
+  } catch (err) {
+    console.error("Erreur dashboard:", err);
   }
-
-  // Le directeur voit les alertes
-  if (user.role === "directeur") {
-    document.getElementById("section-per-urgent").style.display = "block";
-  }
-</script>
-</body>
-</html>
+});

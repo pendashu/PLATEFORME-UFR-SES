@@ -1,50 +1,29 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const perListe = JSON.parse(localStorage.getItem("perListe")) || [];
-  const listePER = document.getElementById("listePER");
-
-  // Afficher la liste des PER
-  listePER.innerHTML = "";
-  if (perListe.length === 0) {
-    listePER.innerHTML = "<li>Aucun PER enregistré.</li>";
-  } else {
-    perListe.forEach(p => {
-      const li = document.createElement("li");
-      li.textContent = `${p.date} | ${p.demandeur} (${p.service}) : ${p.objet} → ${p.montant} FCFA`;
-      listePER.appendChild(li);
-    });
+// Charger les PER depuis le backend
+async function chargerPER() {
+  try {
+    const response = await fetch("https://backend-ufr-ses-i9bo.onrender.com/api/per");
+    const pers = await response.json();
+    afficherPER(pers);
+  } catch (err) {
+    console.error("Erreur:", err);
   }
+}
 
-  // Gestion du formulaire (si présent)
-  const form = document.getElementById("formPER");
-  if (form) {
-    form.addEventListener("submit", function(e) {
-      e.preventDefault();
-      
-      const newPer = {
-        date: document.getElementById("date").value || new Date().toISOString().split('T')[0],
-        demandeur: document.getElementById("demandeur").value,
-        service: document.getElementById("service").value,
-        objet: document.getElementById("objet").value,
-        montant: parseFloat(document.getElementById("montant").value)
-      };
+// Ajouter un nouveau PER
+async function ajouterPER(demandeur, service, objet, montant, date, statut) {
+  const nouveauPER = { demandeur, service, objet, montant, date, statut };
 
-      perListe.push(newPer);
-      localStorage.setItem("perListe", JSON.stringify(perListe));
-      
-      // Réinitialiser le formulaire
-      form.reset();
-      
-      // Rafraîchir l'affichage
-      const li = document.createElement("li");
-      li.textContent = `${newPer.date} | ${newPer.demandeur} (${newPer.service}) : ${newPer.objet} → ${newPer.montant} FCFA`;
-      listePER.appendChild(li);
+  try {
+    const response = await fetch("https://backend-ufr-ses-i9bo.onrender.com/api/per", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(nouveauPER)
     });
+
+    if (response.ok) {
+      chargerPER(); // Recharge
+    }
+  } catch (err) {
+    console.error("Erreur:", err);
   }
-});
-const role = user.role;
-
-
-if (user.role !== "comptable_finance") {
-  alert("❌ Accès refusé : uniquement pour le comptable finance.");
-  window.location.href = "index.html";
 }

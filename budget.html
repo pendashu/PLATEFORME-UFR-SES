@@ -5,13 +5,13 @@
   <title>💼 Gestion du Budget - UFR SES</title>
   <link rel="stylesheet" href="css/style.css" />
   <script src="js/auth.js"></script>
-  <script src="js/main.js"></script>
 </head>
 <body>
 
   <!-- 🔐 Vérification d'authentification -->
   <script>
     const user = checkAuth();
+    if (!user) window.location.href = "login.html";
   </script>
 
   <header>
@@ -26,9 +26,9 @@
       <h2>Paramètres du budget</h2>
       <label>
         Budget alloué (FCFA) :
-        <input type="number" id="budgetTotal" value="1500000" />
+        <input type="number" id="budgetTotal" value="1500000" disabled />
       </label>
-      <p><em>Modifiable uniquement par le comptable</em></p>
+      <p><em>Modifiable uniquement par le comptable finance</em></p>
     </section>
 
     <!-- Résumé en temps réel -->
@@ -64,54 +64,104 @@
 
   <!-- 🔒 Protection par rôle -->
   <script>
-    // Rôles autorisés à saisir
-  const rolesAutorises = ["comptable_matiere", "comptable_finance"];
-
-
-    if (!rolesAutorises.includes(user.role)) {
-      // Masquer le formulaire
+    // Seul le comptable finance peut saisir
+    if (user.role !== "comptable_finance") {
       document.getElementById("formSection").style.display = "none";
-
-      // Désactiver tous les champs
-      document.querySelectorAll("input, button").forEach(el => {
-        el.disabled = true;
-        el.style.opacity = "0.6";
-      });
-
-      // Bloquer toute soumission
-      document.querySelectorAll("form").forEach(form => {
-        form.addEventListener("submit", function(e) {
-          e.preventDefault();
-          alert(`❌ Interdit : seul le comptable peut enregistrer des dépenses.`);
-        });
-      });
-
-      // Ajouter message lecture seule
       const notice = document.createElement("div");
       notice.textContent = `👀 Mode lecture seule – Connecté(e) en tant que ${user.role}`;
       notice.style = "background: #f0f8ff; color: #003366; padding: 12px; text-align: center; font-weight: bold; margin: 15px 20px; border-radius: 5px; border: 1px solid #b3d9ff;";
       document.querySelector("main").prepend(notice);
     }
 
-    // Afficher le nom dans le bouton déconnexion
+    // Déconnexion
     document.getElementById("logoutBtn").addEventListener("click", function(e) {
-      if (confirm("Se déconnecter ?")) {
-        localStorage.removeItem("user");
-      }
+      if (confirm("Se déconnecter ?")) localStorage.removeItem("user");
     });
   </script>
 
-  <!-- 📈 Mise à jour du tableau -->
-  <script src="js/budget.js"></script>
+  <!-- 📈 Script budget -->
   <script>
-   user = checkAuth();
+    const API = "https://backend-ufr-ses-i9bo.onrender.com/api/budget";
+    const depensesEl = document.getElementById("depenses");
+    const soldeEl = document.getElementById("solde");
+    const statutEl = document.getElementById("statut");
+    const listeDepenses = document.getElementById("listeDepenses");
+    const budgetInput = document.getElementById("budgetTotal");
 
-  // 🔒 Seul le comptable finance peut accéder à cette page
-  if (user.role !== "comptable_finance") {
-    alert("❌ Accès refusé : cette page est réservée au comptable finance.");
-    window.location.href = "index.html";
-  }
-</script>
+    async function chargerBudget() {
+      try {
+        // GET budget total
+        const resTotal = await fetch(`${API}/total`);
+        const totalData = await resTotal.json();
+        const budgetTotal = totalData.total || 1500000;
+        budgetInput.value = budgetTotal;
+
+        // GET dépenses
+        const resDep = await fetch(`${API}/depenses`);
+        const depenses = resDep.ok ? await resDep.json() : [];
+
+        const totalDepenses = depenses.reduce((sum, d) => sum + parseFloat(d.montant), 0);
+        const solde = budgetTotal - totalDepenses;
+
+        depensesEl.textContent = `${totalDepenses.toLocaleString()} FCFA`;
+        soldeEl.textContent = `${solde.toLocaleString()} FCFA`;
+
+        if (solde < 0) {
+          statutEl.textContent = "🔴 Dépassement";
+          statutEl.style.color = "red";
+        } else if (solde < budgetTotal * 0.2) {
+          statutEl.textContent = "⚠️ Attention";
+          statutEl.style.color = "orange";
+        } else {
+          statutEl.textContent = "✅ Normal";
+          statutEl.style.color = "green";
+        }
+
+        // Affichage historique
+        listeDepenses.innerHTML = "";
+        if (depenses.length === 0) {
+          listeDepenses.innerHTML = "<li>Aucune dépense enregistrée.</li>";
+        } else {
+          depenses.forEach(d => {
+            const li = document.createElement("li");
+            li.textContent = `${d.date} : ${d.motif} – ${parseFloat(d.montant).toLocaleString()} FCFA`;
+            listeDepenses.appendChild(li);
+          });
+        }
+
+      } catch (err) {
+        console.error("Erreur réseau :", err);
+        alert("Impossible de se connecter au serveur.");
+      }
+    }
+
+    // Ajouter une dépense
+    document.getElementById("formDepense").addEventListener("submit", async e => {
+      e.preventDefault();
+      const motif = document.getElementById("motif").value;
+      const montant = document.getElementById("montant").value;
+      try {
+        const res = await fetch(`${API}/ajouter`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ motif, montant: parseFloat(montant), date: new Date().toISOString().slice(0,10) })
+        });
+        if (res.ok) {
+          alert("✅ Dépense ajoutée !");
+          chargerBudget();
+          document.getElementById("formDepense").reset();
+        } else {
+          alert("❌ Erreur lors de l'ajout.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Impossible de se connecter au serveur.");
+      }
+    });
+
+    // Charger les données au démarrage
+    chargerBudget();
+  </script>
 
 </body>
 </html>

@@ -68,3 +68,39 @@ function exporterEnExcel() {
   XLSX.utils.book_append_sheet(wb, ws, "PER");
   XLSX.writeFile(wb, "PER_UFR_SES.xlsx");
 }
+// URL de ton backend Render
+const API_URL = "https://backend-ufr-ses-i9bo.onrender.com";
+
+// Exemple : récupérer toutes les "pers" (ou PER)
+async function getPer() {
+  try {
+    const response = await fetch(`${API_URL}/api/per`);
+    if (!response.ok) {
+      throw new Error("Erreur HTTP : " + response.status);
+    }
+    const data = await response.json();
+    console.log("Données PER :", data);
+    displayPers(data); // fonction pour afficher les données dans ta page
+  } catch (err) {
+    console.error("Erreur lors du fetch PER :", err);
+  }
+}
+
+function displayPers(pers) {
+  const container = document.getElementById("pers-list");
+  if (!container) return;
+
+  // vide l'ancien contenu
+  container.innerHTML = "";
+
+  pers.forEach(p => {
+    const div = document.createElement("div");
+    div.textContent = `Nom : ${p.nom}, Prénom : ${p.prenom}, Id : ${p._id}`;
+    container.appendChild(div);
+  });
+}
+
+// Appel la fonction quand la page charge
+window.addEventListener("DOMContentLoaded", () => {
+  getPer();
+});
