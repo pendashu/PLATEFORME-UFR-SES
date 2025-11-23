@@ -27,3 +27,16 @@ async function ajouterPER(demandeur, service, objet, montant, date, statut) {
     console.error("Erreur:", err);
   }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const user = checkAuth();
+  if (!user) return;
+
+  if (user.role !== "comptable_finance" && user.role !== "directeur_ufr") {
+    alert("❌ Accès refusé : uniquement pour le comptable finance.");
+    window.location.href = "dashboard.html";
+    return;
+  }
+
+  chargerDepenses();
+});

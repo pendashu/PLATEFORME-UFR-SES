@@ -85,3 +85,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // Exemple : si tu as un bouton "Ajouter"
   window.ajouterDepense = ajouterDepense;
 });
+// Fonction pour vérifier l'utilisateur connecté
+function checkAuth() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user) {
+    window.location.href = "index.html";
+    return null;
+  }
+  return user;
+}
