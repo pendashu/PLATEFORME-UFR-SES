@@ -7,21 +7,37 @@
 </head>
 <body>
   <header>
-    <h1>📊 Plateforme UFR SES</h1>
+    <h1>📊 Plateforme de Gestion - UFR SES</h1>
   </header>
 
   <main>
     <p>Bienvenue, <span id="welcomeName">Chargement...</span></p>
-    <a href="login.html">Se connecter</a>
+    <a href="login.html" id="logoutBtn" style="color: #900;">🔐 Se déconnecter</a>
+
+    <div class="grid-menu">
+      <a href="budget.html" class="card-link">💼 Budget</a>
+      <a href="per.html" class="card-link">📝 PER</a>
+      <a href="stock.html" class="card-link">📦 Stocks</a>
+      <a href="carburant.html" class="card-link">⛽ Carburant</a>
+      <a href="passation.html" class="card-link">📋 Passation</a>
+      <a href="dashboard.html" class="card-link">📈 Dashboard</a>
+    </div>
   </main>
 
   <script src="js/auth.js"></script>
   <script>
     const user = JSON.parse(localStorage.getItem("user"));
-    if (user) {
-      document.getElementById("welcomeName").textContent = user.name;
-    } else {
+    if (!user) {
       window.location.href = "login.html";
+    } else {
+      document.getElementById("welcomeName").textContent = user.name;
+      document.getElementById("logoutBtn").onclick = function(e) {
+        e.preventDefault();
+        if (confirm("Voulez-vous vraiment vous déconnecter ?")) {
+          localStorage.removeItem("user");
+          window.location.href = "login.html";
+        }
+      };
     }
   </script>
 </body>
