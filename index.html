@@ -2,10 +2,27 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Test</title>
+  <title>Plateforme UFR SES</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <h1>✅ Page fonctionnelle</h1>
-  <p>GitHub Pages marche.</p>
+  <header>
+    <h1>📊 Plateforme UFR SES</h1>
+  </header>
+
+  <main>
+    <p>Bienvenue, <span id="welcomeName">Chargement...</span></p>
+    <a href="login.html">Se connecter</a>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script>
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      document.getElementById("welcomeName").textContent = user.name;
+    } else {
+      window.location.href = "login.html";
+    }
+  </script>
 </body>
 </html>
