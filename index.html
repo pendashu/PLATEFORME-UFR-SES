@@ -40,5 +40,21 @@
       };
     }
   </script>
+  <script>
+  let user = null;
+  try {
+    user = JSON.parse(localStorage.getItem("user"));
+  } catch (e) {
+    console.warn("Données utilisateur corrompues", e);
+    localStorage.removeItem("user");
+  }
+
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
+    document.getElementById("welcomeName").textContent = user.name;
+    // ... reste identique
+  }
+</script>
 </body>
 </html>
