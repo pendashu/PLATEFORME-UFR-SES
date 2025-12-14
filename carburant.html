@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion du Carburant – UFR SES</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>⛽ Gestion du Carburant</h1>
+    <a href="index.html">🏠 Retour</a>
+  </header>
+
+  <section>
+    <h2>Enregistrer un plein</h2>
+    <form id="formCarburant">
+      <input type="date" id="date" required><br><br>
+      <input type="text" id="vehicule" placeholder="Véhicule" required><br><br>
+      <input type="text" id="conducteur" placeholder="Conducteur" required><br><br>
+      <input type="number" id="kilometrage" placeholder="Kilométrage" required><br><br>
+      <input type="number" id="quantite" placeholder="Quantité (L)" required step="0.1"><br><br>
+      <input type="number" id="cout" placeholder="Coût (FCFA)" required><br><br>
+      <button type="submit">Enregistrer</button>
+    </form>
+
+    <h2>Historique des pleins</h2>
+    <ul id="listePleins"></ul>
+  </section>
+
+  <script src="js/auth.js"></script>
+  <script src="js/carburant.js"></script>
+</body>
+</html>

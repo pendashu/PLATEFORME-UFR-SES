@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <title>Tableau de bord – UFR SES</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+    .stat { background: #e3f2fd; padding: 15px; border-radius: 6px; text-align: center; }
+    .stat h3 { margin: 0 0 8px; color: #1565c0; }
+    .stat p { margin: 0; font-size: 1.2em; font-weight: bold; }
+  </style>
 </head>
 <body>
   <header>
@@ -12,22 +18,28 @@
     <a href="index.html">🏠 Accueil</a>
   </header>
 
-  <div class="grid">
-    <a href="budget.html">💼 Gérer le budget</a>
-    <a href="per.html">📝 Expression de besoin</a>
-    <a href="stock.html">📦 Gérer les stocks</a>
-    <a href="carburant.html">⛽ Gérer le carburant</a>
-    <a href="passation.html">📋 Plan de passation</a>
-  </div>
+  <section>
+    <h2>📊 Résumé global</h2>
+    <div class="stats" id="dashboardStats">
+      <div class="stat"><h3>Budget total</h3><p id="total-budget">—</p></div>
+      <div class="stat"><h3>Dépenses</h3><p id="total-depenses">—</p></div>
+      <div class="stat"><h3>Solde</h3><p id="solde">—</p></div>
+      <div class="stat"><h3>PER en attente</h3><p id="per-en-attente">—</p></div>
+      <div class="stat"><h3>Stocks critiques</h3><p id="stocks-critiques">—</p></div>
+      <div class="stat"><h3>Consommation carburant</h3><p id="consommation-moyenne">— L</p></div>
+    </div>
+
+    <h2>accès rapide</h2>
+    <div class="grid">
+      <a href="budget.html">💼 Budget</a>
+      <a href="per.html">📝 PER</a>
+      <a href="stock.html">📦 Stocks</a>
+      <a href="carburant.html">⛽ Carburant</a>
+      <a href="passation.html">📋 Passation</a>
+    </div>
+  </section>
 
   <script src="js/auth.js"></script>
-  <script>
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user) {
-      window.location.href = "login.html";
-    } else {
-      document.getElementById("welcomeName").textContent = user.name;
-    }
-  </script>
+  <script src="js/dashboard.js"></script>
 </body>
 </html>

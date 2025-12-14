@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Plan de Passation – UFR SES</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>📋 Plan de Passation</h1>
+    <a href="index.html">🏠 Retour</a>
+  </header>
+
+  <section>
+    <h2>Ajouter un lot</h2>
+    <form id="formPassation">
+      <input type="text" id="lot" placeholder="Lot" required><br><br>
+      <input type="text" id="objet" placeholder="Objet" required><br><br>
+      <select id="typeMarche" required>
+        <option value="">Type de marché</option>
+        <option value="Travaux">Travaux</option>
+        <option value="Fournitures">Fournitures</option>
+        <option value="Services">Services</option>
+        <option value="Études">Études</option>
+      </select><br><br>
+      <input type="number" id="montantEstime" placeholder="Montant estimé (FCFA)" required><br><br>
+      <select id="procedurePassation" required>
+        <option value="">Procédure</option>
+        <option value="Appel d'offres ouvert">Appel d'offres ouvert</option>
+        <option value="Appel d'offres restreint">Appel d'offres restreint</option>
+        <option value="Procédure négociée">Procédure négociée</option>
+      </select><br><br>
+      <select id="trimestre" required>
+        <option value="">Trimestre</option>
+        <option value="T1">T1</option>
+        <option value="T2">T2</option>
+        <option value="T3">T3</option>
+        <option value="T4">T4</option>
+      </select><br><br>
+      <input type="number" id="annee" placeholder="Année" value="2025" required><br><br>
+      <button type="submit">Ajouter</button>
+    </form>
+
+    <h2>Lots prévus</h2>
+    <table id="tableauPassation">
+      <thead>
+        <tr>
+          <th>Lot</th>
+          <th>Objet</th>
+          <th>Type</th>
+          <th>Montant</th>
+          <th>Procédure</th>
+          <th>Trimestre</th>
+          <th>Année</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <script src="js/auth.js"></script>
+  <script src="js/passation.js"></script>
+</body>
+</html>
